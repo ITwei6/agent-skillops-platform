@@ -1,60 +1,74 @@
 # Agent SkillOps Platform
 
-Agent SkillOps Platform is a team-oriented platform for turning individual
-Codex/Agent work experience into reviewed, versioned, reusable team skills.
+面向研发团队的 SkillOps 平台，用于将个人使用 Codex/Agent 产生的经验、总结、Skill 草稿和相关产出，经过自动分析、人工审核、版本管理和发布流程，沉淀为团队可复用的技能资产。
 
-The goal is not to build a stronger coding agent. The goal is to manage the
-assets produced around agents: experience summaries, skill drafts, review
-records, reusable workflows, project references, and installation packages.
+## 项目定位
 
-## Problem
+本项目不是要做一个比 Codex 更强的 Agent，也不是简单做一个聊天助手。
 
-Individual developers can ask Codex or another agent to summarize a task and
-generate a skill. That works for personal reuse, but it does not solve team
-problems:
+本项目要解决的是团队级问题：
 
-- Is the skill correct and safe?
-- Does it leak credentials, internal URLs, or private context?
-- Does it duplicate an existing team skill?
-- Which project, code version, or document version does it apply to?
-- Who reviewed and approved it?
-- How does the team install, update, or roll back it?
-- Is the skill outdated after the project changes?
+- 个人生成的 Skill 能不能给团队用？
+- 是否经过技术审核？
+- 是否泄露敏感信息？
+- 是否和已有 Skill 重复？
+- 适用于哪个项目和版本？
+- 如何发布、安装、升级、回滚？
+- 项目变化后 Skill 是否过期？
 
-This platform treats agent-produced experience as a governed engineering asset.
+因此，本项目核心是 **Agent 经验资产化 + Skill 生命周期治理**。
 
-## Initial Scope
+## 当前阶段
 
-The first version focuses on the skill lifecycle:
+当前处于项目设计阶段，暂不编写业务代码。
 
-1. Submit experience or a skill draft.
-2. Normalize it into a structured skill proposal.
-3. Run automated checks for quality, safety, duplication, and scope.
-4. Let technical reviewers approve, reject, or request changes.
-5. Publish approved skills into a team skill registry.
-6. Search, install, version, and evaluate skills.
+本阶段目标是先完成类似“视频点播系统服务端文档”的完整前置设计：
 
-## Planned Tech Direction
+- 产品文档
+- 业务分析
+- 项目设计
+- 接口设计
+- 数据库设计
+- 消息队列设计
+- 开发规范
+- 子服务设计总览
+- 后续各子服务详细设计
 
-- C++ microservices built with the existing C++ scaffold.
-- MySQL for core metadata.
-- Redis for cache, review state, and rate limiting.
-- RabbitMQ for asynchronous skill analysis and packaging jobs.
-- Elasticsearch for searching experience records, skills, and review history.
-- FastDFS for uploaded artifacts and generated skill packages.
-- Etcd and brpc for internal service discovery and RPC.
-- Python/LangGraph workers for RAG, skill generation, and automated review.
+## 文档入口
 
-## Service Draft
+主要设计文档位于：
 
-- `gateway-service`: external HTTP API.
-- `identity-service`: users, teams, roles, and reviewer permissions.
-- `experience-service`: submitted task summaries and agent outputs.
-- `skill-service`: skill drafts, versions, publication state, and registry.
-- `review-service`: human review workflow and audit history.
-- `artifact-service`: uploaded references and generated skill packages.
-- `analysis-worker`: RAG and Agent-based checks.
+```text
+docs/服务端文档/
+docs/子服务文档/
+```
 
-## Current Status
+建议阅读顺序：
 
-This repository is in planning/bootstrap stage.
+```text
+00. 产品文档
+01. 业务分析
+02. 项目设计
+03. 接口设计
+04. 数据库设计
+05. 消息队列设计
+06. 开发规范与工程约束
+07. 子服务设计总览
+```
+
+## 技术方向
+
+- C++ 微服务：平台核心服务
+- C++ 脚手架：brpc、etcd、RabbitMQ、Redis、MySQL、FastDFS、Elasticsearch 等基础能力
+- Python/LangGraph：RAG 和 Agent 自动分析 Worker
+- MySQL：核心业务元数据
+- Redis：缓存、限流、锁、任务状态
+- RabbitMQ：异步分析、打包、索引、通知
+- Elasticsearch：Skill、经验、审核内容检索
+- FastDFS：上传附件和生成的 Skill 包
+
+## 实施原则
+
+先设计，后实现。
+
+代码实现由单独实现窗口负责，本仓库文档会作为后续实现依据。

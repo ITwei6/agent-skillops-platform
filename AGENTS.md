@@ -1,33 +1,59 @@
 # Agent Instructions
 
-## Project Intent
+## 项目定位
 
-This repository is for a C++ microservice platform that governs team-owned
-Codex/Agent skills. Keep the project focused on skill lifecycle management:
-submission, normalization, automated checks, human review, publishing,
-search, installation, versioning, and quality feedback.
+本仓库用于设计和实现一个基于 C++ 微服务的团队 SkillOps 平台。
 
-## Engineering Guidelines
+平台核心目标：
 
-- Prefer small, explicit service boundaries.
-- Do not split services only to demonstrate microservices.
-- Keep Agent/RAG logic behind worker boundaries so the C++ platform remains the
-system of record.
-- Treat skill content, review comments, uploaded references, and generated
-packages as auditable assets.
-- Never commit secrets, local credentials, internal tokens, or raw private
-conversation logs.
+- 收集个人 Codex/Agent 工作经验
+- 生成或规范化 Skill 草稿
+- 自动检查敏感信息、重复内容、触发范围和格式问题
+- 支持技术审核
+- 发布团队级 Skill
+- 管理版本、安装包、反馈和过期状态
 
-## Expected Stack
+## 当前协作模式
+
+当前阶段以架构设计和项目管理为主。
+
+本窗口承担：
+
+- 产品与业务设计
+- 项目总体架构
+- 接口、数据库、MQ 设计
+- 工程规范
+- 子服务边界设计
+- 实现顺序和验收标准
+
+本窗口不负责直接编写业务代码。后续编码由另一个 Codex 实现窗口根据文档完成。
+
+## 工程约束
+
+- 必须先完成设计文档，再进入编码。
+- 不为了微服务而微服务。
+- C++ 服务维护平台核心数据。
+- Python/LangGraph Worker 只负责 RAG 和 Agent 分析，不直接绕过审核发布 Skill。
+- Skill 内容、审核意见、上传文件、生成包都属于可审计资产。
+- 不提交密钥、账号、token、私有会话原文或未脱敏敏感信息。
+
+## 预期技术栈
 
 - C++17
 - CMake
-- Existing C++ microservice scaffold
+- C++ 微服务脚手架
 - brpc / protobuf / etcd
 - MySQL / Redis / RabbitMQ / Elasticsearch / FastDFS
-- Python workers for LangGraph and RAG tasks
+- Python / LangGraph / RAG Worker
 
-## Verification
+## 文档优先级
 
-Until code is added, verify documentation changes by reviewing Markdown for
-clear scope and consistency.
+后续所有实现应优先阅读：
+
+```text
+docs/服务端文档/
+docs/子服务文档/
+docs/实施计划.md
+```
+
+如果实现过程中发现设计不合理，应先反馈设计窗口，不直接擅自改变核心业务方向。
