@@ -1,0 +1,45 @@
+# Build outputs
+build/
+cmake-build-*/
+bin/
+lib/
+
+# Generated files
+generated/
+dist/
+packages/
+
+# Runtime data
+logs/
+tmp/
+*.log
+
+# Local config and secrets
+.env
+.env.*
+*.pem
+*.key
+*.crt
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Python worker caches
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# C/C++
+*.o
+*.a
+*.so
+*.dll
+*.exe
