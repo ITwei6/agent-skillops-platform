@@ -32,6 +32,20 @@ std::string ExperienceIdFromPath(const std::string& path) {
     return value.substr(std::string(prefix).size());
 }
 
+std::string AnalysisJobIdFromPath(const std::string& path) {
+    constexpr const char* prefix = "/internal/v1/analysis-jobs/";
+    if (path.rfind(prefix, 0) != 0) {
+        return "";
+    }
+    auto value = path.substr(std::string(prefix).size());
+    constexpr const char* retry_suffix = "/retry";
+    if (value.size() > std::string(retry_suffix).size() &&
+        value.substr(value.size() - std::string(retry_suffix).size()) == retry_suffix) {
+        value = value.substr(0, value.size() - std::string(retry_suffix).size());
+    }
+    return value;
+}
+
 std::string QueryValue(const std::string& query, const std::string& key) {
     const auto prefix = key + "=";
     std::size_t start = 0;
@@ -106,6 +120,15 @@ int main(int argc, char** argv) {
                 }
 
                 if (request.method == "GET") {
+                    const auto job_id = AnalysisJobIdFromPath(request.path);
+                    if (!job_id.empty()) {
+                        const auto job = service.GetAnalysisJob(job_id);
+                        if (!job.has_value()) {
+                            return Envelope(404, "Not Found", "ANALYSIS_JOB_NOT_FOUND", "analysis job not found", "{}");
+                        }
+                        return Envelope(200, "OK", "OK", "success", skillops::experience::AnalysisJobToJson(*job));
+                    }
+
                     const auto experience_id = ExperienceIdFromPath(request.path);
                     if (!experience_id.empty()) {
                         const auto experience = service.GetExperience(experience_id);
@@ -113,6 +136,18 @@ int main(int argc, char** argv) {
                             return Envelope(404, "Not Found", "EXPERIENCE_NOT_FOUND", "experience not found", "{}");
                         }
                         return Envelope(200, "OK", "OK", "success", skillops::experience::ExperienceToJson(*experience));
+                    }
+                }
+
+                if (request.method == "POST") {
+                    const auto job_id = AnalysisJobIdFromPath(request.path);
+                    if (!job_id.empty() && request.path.size() > std::string("/retry").size() &&
+                        request.path.substr(request.path.size() - std::string("/retry").size()) == "/retry") {
+                        const auto job = service.RetryAnalysisJob(job_id);
+                        if (!job.has_value()) {
+                            return Envelope(404, "Not Found", "ANALYSIS_JOB_NOT_FOUND", "analysis job not found", "{}");
+                        }
+                        return Envelope(200, "OK", "OK", "success", skillops::experience::AnalysisJobToJson(*job));
                     }
                 }
 

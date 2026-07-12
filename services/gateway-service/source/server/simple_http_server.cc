@@ -100,6 +100,12 @@ skillops::common::HttpResponse SimpleHttpServer::HandleRequest(const skillops::c
         return client.Send(request.method, WithQuery(internal_path, request), request.body);
     }
 
+    if (request.path.rfind("/api/v1/analysis-jobs/", 0) == 0) {
+        const auto internal_path = "/internal/v1" + request.path.substr(std::string("/api/v1").size());
+        skillops::common::HttpClient client(experience_host_, experience_port_);
+        return client.Send(request.method, WithQuery(internal_path, request), request.body);
+    }
+
     if (request.path == "/api/v1/skill-drafts" || request.path.rfind("/api/v1/skill-drafts/", 0) == 0 ||
         request.path == "/api/v1/skills") {
         if (request.path.rfind("/api/v1/skill-drafts/", 0) == 0 &&
