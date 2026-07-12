@@ -8,7 +8,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(SkillOpsDependencies)
+find_package(Threads REQUIRED)
 
+add_subdirectory(services/common)
 add_subdirectory(services/gateway-service)
 add_subdirectory(services/identity-service)
 add_subdirectory(services/project-service)

@@ -11,5 +11,5 @@ target_include_directories(gateway-service
 
 target_link_libraries(gateway-service
     PRIVATE
-        skillops::microservice_kit
+        skillops::common
 )

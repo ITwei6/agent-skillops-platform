@@ -30,10 +30,13 @@ function(skillops_find_microservice_kit)
         return()
     endif()
 
-    message(FATAL_ERROR
-        "Unable to find C++ microservice kit. Expected one of: "
-        "microkit::microkit, tew_scaffold::tew_scaffold, bite_scaffold::bite_scaffold. "
-        "Build and install cpp-microservice-kit in the dev container first.")
+    add_library(skillops::microservice_kit INTERFACE IMPORTED GLOBAL)
+    set(SKILLOPS_MICROSERVICE_KIT_PACKAGE "none" CACHE STRING "Resolved C++ microservice kit package")
+    set(SKILLOPS_MICROSERVICE_KIT_TARGET "skillops::microservice_kit" CACHE STRING "Resolved C++ microservice kit target")
+    message(WARNING
+        "Unable to find C++ microservice kit. Building the first-stage skeleton "
+        "with the standard-library fallback. Install cpp-microservice-kit to enable "
+        "framework logging and adapters.")
 endfunction()
 
 skillops_find_microservice_kit()
