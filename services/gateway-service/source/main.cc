@@ -25,6 +25,8 @@ int main(int argc, char** argv) {
     std::uint16_t experience_port = 18083;
     std::string skill_host = "127.0.0.1";
     std::uint16_t skill_port = 18084;
+    std::string review_host = "127.0.0.1";
+    std::uint16_t review_port = 18085;
 
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
@@ -38,6 +40,8 @@ int main(int argc, char** argv) {
         const auto experience_port_value = ReadArgValue(arg, "--experience-port=");
         const auto skill_host_value = ReadArgValue(arg, "--skill-host=");
         const auto skill_port_value = ReadArgValue(arg, "--skill-port=");
+        const auto review_host_value = ReadArgValue(arg, "--review-host=");
+        const auto review_port_value = ReadArgValue(arg, "--review-port=");
         if (!host_value.empty()) {
             host = host_value;
         } else if (!port_value.empty()) {
@@ -58,6 +62,10 @@ int main(int argc, char** argv) {
             skill_host = skill_host_value;
         } else if (!skill_port_value.empty()) {
             skill_port = static_cast<std::uint16_t>(std::stoi(skill_port_value));
+        } else if (!review_host_value.empty()) {
+            review_host = review_host_value;
+        } else if (!review_port_value.empty()) {
+            review_port = static_cast<std::uint16_t>(std::stoi(review_port_value));
         } else {
             std::cerr << "Unknown argument: " << arg << std::endl;
             return 2;
@@ -76,7 +84,9 @@ int main(int argc, char** argv) {
             experience_host,
             experience_port,
             skill_host,
-            skill_port);
+            skill_port,
+            review_host,
+            review_port);
         return server.Run();
     } catch (const std::exception& ex) {
         std::cerr << "gateway-service failed: " << ex.what() << std::endl;

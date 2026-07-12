@@ -267,6 +267,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Envelope"
+  /api/v1/reviews/queue:
+    get:
+      summary: List review queue
+      parameters:
+        - in: query
+          name: project_id
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Review queue page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/skill-drafts/{draft_id}/reviews:
+    post:
+      summary: Submit a review decision
+      parameters:
+        - in: path
+          name: draft_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateReviewRequest"
+      responses:
+        "200":
+          description: Created review record
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
 components:
   schemas:
     Envelope:
@@ -376,4 +417,23 @@ components:
         version:
           type: string
         changelog:
+          type: string
+    CreateReviewRequest:
+      type: object
+      required:
+        - project_id
+        - decision
+      properties:
+        project_id:
+          type: string
+        reviewer_id:
+          type: string
+        decision:
+          type: string
+          enum:
+            - approve
+            - reject
+            - needs_changes
+            - comment
+        comments:
           type: string

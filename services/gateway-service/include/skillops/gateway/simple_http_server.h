@@ -20,7 +20,9 @@ public:
         std::string experience_host,
         std::uint16_t experience_port,
         std::string skill_host,
-        std::uint16_t skill_port);
+        std::uint16_t skill_port,
+        std::string review_host,
+        std::uint16_t review_port);
     ~SimpleHttpServer();
 
     SimpleHttpServer(const SimpleHttpServer&) = delete;
@@ -42,6 +44,8 @@ private:
     std::uint16_t experience_port_;
     std::string skill_host_;
     std::uint16_t skill_port_;
+    std::string review_host_;
+    std::uint16_t review_port_;
     std::unique_ptr<skillops::common::HttpServer> server_;
 };
 

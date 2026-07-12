@@ -30,7 +30,9 @@ SimpleHttpServer::SimpleHttpServer(
     std::string experience_host,
     std::uint16_t experience_port,
     std::string skill_host,
-    std::uint16_t skill_port)
+    std::uint16_t skill_port,
+    std::string review_host,
+    std::uint16_t review_port)
     : host_(std::move(host)),
       port_(port),
       identity_host_(std::move(identity_host)),
@@ -40,7 +42,9 @@ SimpleHttpServer::SimpleHttpServer(
       experience_host_(std::move(experience_host)),
       experience_port_(experience_port),
       skill_host_(std::move(skill_host)),
-      skill_port_(skill_port) {
+      skill_port_(skill_port),
+      review_host_(std::move(review_host)),
+      review_port_(review_port) {
     server_ = std::make_unique<skillops::common::HttpServer>(
         host_,
         port_,
@@ -94,8 +98,21 @@ skillops::common::HttpResponse SimpleHttpServer::HandleRequest(const skillops::c
 
     if (request.path == "/api/v1/skill-drafts" || request.path.rfind("/api/v1/skill-drafts/", 0) == 0 ||
         request.path == "/api/v1/skills") {
+        if (request.path.rfind("/api/v1/skill-drafts/", 0) == 0 &&
+            request.path.size() > std::string("/reviews").size() &&
+            request.path.substr(request.path.size() - std::string("/reviews").size()) == "/reviews") {
+            const auto internal_path = "/internal/v1" + request.path.substr(std::string("/api/v1").size());
+            skillops::common::HttpClient client(review_host_, review_port_);
+            return client.Send(request.method, WithQuery(internal_path, request), request.body);
+        }
         const auto internal_path = "/internal/v1" + request.path.substr(std::string("/api/v1").size());
         skillops::common::HttpClient client(skill_host_, skill_port_);
+        return client.Send(request.method, WithQuery(internal_path, request), request.body);
+    }
+
+    if (request.path == "/api/v1/reviews/queue") {
+        const auto internal_path = "/internal/v1/reviews/queue";
+        skillops::common::HttpClient client(review_host_, review_port_);
         return client.Send(request.method, WithQuery(internal_path, request), request.body);
     }
 

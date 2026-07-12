@@ -1,0 +1,5 @@
+service:
+  name: review-service
+logging:
+  level: info
+  output: stdout
