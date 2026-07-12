@@ -47,6 +47,38 @@ std::string PathSuffix(const std::string& path, const std::string& prefix) {
     return path.substr(prefix.size());
 }
 
+struct SkillVersionPath {
+    std::string skill_id;
+    std::string version;
+    bool package = false;
+};
+
+SkillVersionPath ParseSkillVersionPath(const std::string& path) {
+    constexpr const char* prefix = "/internal/v1/skills/";
+    constexpr const char* versions_segment = "/versions/";
+    constexpr const char* package_suffix = "/package";
+
+    SkillVersionPath result;
+    if (path.rfind(prefix, 0) != 0) {
+        return result;
+    }
+
+    auto value = path.substr(std::string(prefix).size());
+    const auto versions_pos = value.find(versions_segment);
+    if (versions_pos == std::string::npos) {
+        return result;
+    }
+
+    result.skill_id = value.substr(0, versions_pos);
+    result.version = value.substr(versions_pos + std::string(versions_segment).size());
+    if (result.version.size() > std::string(package_suffix).size() &&
+        result.version.substr(result.version.size() - std::string(package_suffix).size()) == package_suffix) {
+        result.version = result.version.substr(0, result.version.size() - std::string(package_suffix).size());
+        result.package = true;
+    }
+    return result;
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -150,6 +182,20 @@ int main(int argc, char** argv) {
                         skillops::skill::PublishedSkillListToJson(service.ListPublishedSkills(
                             QueryValue(request.query, "project_id"),
                             QueryValue(request.query, "query"))));
+                }
+
+                if (request.method == "GET") {
+                    const auto version_path = ParseSkillVersionPath(request.path);
+                    if (!version_path.skill_id.empty() && !version_path.version.empty()) {
+                        const auto skill = service.GetPublishedSkillVersion(version_path.skill_id, version_path.version);
+                        if (!skill.has_value()) {
+                            return Envelope(404, "Not Found", "SKILL_VERSION_NOT_FOUND", "skill version not found", "{}");
+                        }
+                        if (version_path.package) {
+                            return Envelope(200, "OK", "OK", "success", skillops::skill::SkillPackageToJson(*skill));
+                        }
+                        return Envelope(200, "OK", "OK", "success", skillops::skill::PublishedSkillToJson(*skill));
+                    }
                 }
 
                 return Envelope(404, "Not Found", "SYSTEM_NOT_FOUND", "not found", "{}");

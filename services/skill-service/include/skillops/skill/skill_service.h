@@ -50,6 +50,7 @@ public:
     std::optional<SkillDraft> UpdateDraft(const std::string& id, const UpdateSkillDraftRequest& request);
     std::optional<SkillDraft> SubmitDraft(const std::string& id);
     std::optional<PublishedSkill> PublishDraft(const std::string& id, const std::string& version, const std::string& changelog);
+    std::optional<PublishedSkill> GetPublishedSkillVersion(const std::string& skill_id, const std::string& version) const;
     std::vector<PublishedSkill> ListPublishedSkills(const std::string& project_id, const std::string& query) const;
 
 private:
@@ -62,5 +63,6 @@ private:
 std::string SkillDraftToJson(const SkillDraft& draft);
 std::string PublishedSkillToJson(const PublishedSkill& skill);
 std::string PublishedSkillListToJson(const std::vector<PublishedSkill>& skills);
+std::string SkillPackageToJson(const PublishedSkill& skill);
 
 }  // namespace skillops::skill

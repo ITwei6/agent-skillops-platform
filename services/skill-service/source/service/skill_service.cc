@@ -106,6 +106,15 @@ std::vector<PublishedSkill> SkillService::ListPublishedSkills(const std::string&
     return filtered;
 }
 
+std::optional<PublishedSkill> SkillService::GetPublishedSkillVersion(const std::string& skill_id, const std::string& version) const {
+    for (const auto& skill : published_skills_) {
+        if (skill.id == skill_id && skill.version == version) {
+            return skill;
+        }
+    }
+    return std::nullopt;
+}
+
 std::string SkillDraftToJson(const SkillDraft& draft) {
     return "{\"draft_id\":" + skillops::common::JsonString(draft.id) +
            ",\"project_id\":" + skillops::common::JsonString(draft.project_id) +
@@ -138,6 +147,15 @@ std::string PublishedSkillListToJson(const std::vector<PublishedSkill>& skills) 
     }
     items += "]";
     return "{\"items\":" + items + ",\"page\":1,\"page_size\":20,\"total\":" + std::to_string(skills.size()) + "}";
+}
+
+std::string SkillPackageToJson(const PublishedSkill& skill) {
+    const auto package_artifact_id = "pkg_" + skill.id + "_" + skill.version;
+    return "{\"skill_id\":" + skillops::common::JsonString(skill.id) +
+           ",\"version\":" + skillops::common::JsonString(skill.version) +
+           ",\"package_artifact_id\":" + skillops::common::JsonString(package_artifact_id) +
+           ",\"download_url\":" + skillops::common::JsonString("/api/v1/skills/" + skill.id + "/versions/" + skill.version + "/package") +
+           ",\"status\":\"package_placeholder\"}";
 }
 
 }  // namespace skillops::skill

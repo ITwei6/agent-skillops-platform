@@ -107,7 +107,7 @@ skillops::common::HttpResponse SimpleHttpServer::HandleRequest(const skillops::c
     }
 
     if (request.path == "/api/v1/skill-drafts" || request.path.rfind("/api/v1/skill-drafts/", 0) == 0 ||
-        request.path == "/api/v1/skills") {
+        request.path == "/api/v1/skills" || request.path.rfind("/api/v1/skills/", 0) == 0) {
         if (request.path.rfind("/api/v1/skill-drafts/", 0) == 0 &&
             request.path.size() > std::string("/reviews").size() &&
             request.path.substr(request.path.size() - std::string("/reviews").size()) == "/reviews") {
