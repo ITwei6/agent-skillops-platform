@@ -91,6 +91,27 @@ ServiceConfig LoadServiceConfig(const std::string& path, ServiceConfig defaults)
             continue;
         }
 
+        if (section == "database" && indent == 2) {
+            if (!config.database.has_value()) {
+                config.database = DatabaseConfig{};
+            }
+            const auto [key, value] = ParseKeyValue(line);
+            if (key == "enabled") {
+                config.database->enabled = (value == "true" || value == "1" || value == "yes");
+            } else if (key == "host") {
+                config.database->host = value;
+            } else if (key == "port") {
+                config.database->port = ParsePort(value);
+            } else if (key == "user") {
+                config.database->user = value;
+            } else if (key == "password") {
+                config.database->password = value;
+            } else if (key == "schema") {
+                config.database->schema = value;
+            }
+            continue;
+        }
+
         if (section == "upstreams" && indent == 4 && !upstream.empty()) {
             const auto [key, value] = ParseKeyValue(line);
             if (key == "host") {

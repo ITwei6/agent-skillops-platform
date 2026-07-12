@@ -1,7 +1,16 @@
 include_guard(GLOBAL)
 
 function(skillops_try_microservice_kit package_name target_name out_found)
-    find_package(${package_name} QUIET)
+    if("${package_name}" STREQUAL "tew_scaffold")
+        find_package(${package_name} QUIET
+            PATHS "${CMAKE_CURRENT_SOURCE_DIR}/../../third_party/cpp-microservice-kit/build"
+            NO_DEFAULT_PATH)
+    endif()
+
+    if(NOT TARGET ${target_name})
+        find_package(${package_name} QUIET)
+    endif()
+
     if(TARGET ${target_name})
         add_library(skillops::microservice_kit INTERFACE IMPORTED GLOBAL)
         target_link_libraries(skillops::microservice_kit INTERFACE ${target_name})

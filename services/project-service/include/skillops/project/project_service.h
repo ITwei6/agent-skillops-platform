@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "skillops/common/config.h"
+
 namespace skillops::project {
 
 struct Project {
@@ -27,13 +29,20 @@ struct CreateProjectRequest {
 
 class ProjectService {
 public:
+    explicit ProjectService(std::optional<skillops::common::DatabaseConfig> database = std::nullopt);
+
     Project CreateProject(const CreateProjectRequest& request);
     std::vector<Project> ListProjects() const;
     std::optional<Project> GetProject(const std::string& id) const;
 
 private:
+    void LoadFromDatabase();
+    void EnsureDatabaseSchema();
+    void InsertProjectToDatabase(const Project& project);
+
     std::uint64_t next_project_id_{1};
     std::vector<Project> projects_;
+    std::optional<skillops::common::DatabaseConfig> database_;
 };
 
 std::string ProjectToJson(const Project& project);

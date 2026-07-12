@@ -72,7 +72,12 @@ int main(int argc, char** argv) {
 
     try {
         skillops::common::InitLogging();
-        skillops::project::ProjectService service;
+        skillops::common::ServiceConfig config;
+        if (!config_path.empty()) {
+            config.name = "project-service";
+            config = skillops::common::LoadServiceConfig(config_path, config);
+        }
+        skillops::project::ProjectService service(config.database);
         skillops::common::HttpServer server(
             host,
             port,

@@ -63,7 +63,12 @@ int main(int argc, char** argv) {
 
     try {
         skillops::common::InitLogging();
-        skillops::identity::IdentityService service;
+        skillops::common::ServiceConfig config;
+        if (!config_path.empty()) {
+            config.name = "identity-service";
+            config = skillops::common::LoadServiceConfig(config_path, config);
+        }
+        skillops::identity::IdentityService service(config.database);
         skillops::common::HttpServer server(
             host,
             port,
