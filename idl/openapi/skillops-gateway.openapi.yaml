@@ -101,6 +101,172 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Envelope"
+  /api/v1/experiences:
+    get:
+      summary: List experience records
+      parameters:
+        - in: query
+          name: project_id
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: page_size
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Experience page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+    post:
+      summary: Submit an experience record
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateExperienceRequest"
+      responses:
+        "200":
+          description: Created experience and queued analysis job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/experiences/{experience_id}:
+    get:
+      summary: Get experience detail
+      parameters:
+        - in: path
+          name: experience_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Experience detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/skill-drafts:
+    post:
+      summary: Create a Skill draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateSkillDraftRequest"
+      responses:
+        "200":
+          description: Created Skill draft
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/skill-drafts/{draft_id}:
+    get:
+      summary: Get Skill draft detail
+      parameters:
+        - in: path
+          name: draft_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Skill draft detail
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+    patch:
+      summary: Update a Skill draft
+      parameters:
+        - in: path
+          name: draft_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateSkillDraftRequest"
+      responses:
+        "200":
+          description: Updated Skill draft
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/skill-drafts/{draft_id}/submit:
+    post:
+      summary: Submit a Skill draft for review
+      parameters:
+        - in: path
+          name: draft_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Submitted Skill draft
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/skill-drafts/{draft_id}/publish:
+    post:
+      summary: Publish a Skill draft
+      parameters:
+        - in: path
+          name: draft_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PublishSkillRequest"
+      responses:
+        "200":
+          description: Published Skill
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/skills:
+    get:
+      summary: Search published Skills
+      parameters:
+        - in: query
+          name: query
+          schema:
+            type: string
+        - in: query
+          name: project_id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Published Skill page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
 components:
   schemas:
     Envelope:
@@ -153,4 +319,61 @@ components:
         repo_url:
           type: string
         created_by:
+          type: string
+    CreateExperienceRequest:
+      type: object
+      required:
+        - project_id
+        - title
+        - source_type
+        - summary
+      properties:
+        project_id:
+          type: string
+        title:
+          type: string
+        source_type:
+          type: string
+        summary:
+          type: string
+        artifact_ids:
+          type: array
+          items:
+            type: string
+    CreateSkillDraftRequest:
+      type: object
+      required:
+        - project_id
+        - experience_id
+        - name
+        - description
+        - skill_md
+      properties:
+        project_id:
+          type: string
+        experience_id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        skill_md:
+          type: string
+    UpdateSkillDraftRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        skill_md:
+          type: string
+    PublishSkillRequest:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string
+        changelog:
           type: string

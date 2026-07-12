@@ -26,13 +26,21 @@ SimpleHttpServer::SimpleHttpServer(
     std::string identity_host,
     std::uint16_t identity_port,
     std::string project_host,
-    std::uint16_t project_port)
+    std::uint16_t project_port,
+    std::string experience_host,
+    std::uint16_t experience_port,
+    std::string skill_host,
+    std::uint16_t skill_port)
     : host_(std::move(host)),
       port_(port),
       identity_host_(std::move(identity_host)),
       identity_port_(identity_port),
       project_host_(std::move(project_host)),
-      project_port_(project_port) {
+      project_port_(project_port),
+      experience_host_(std::move(experience_host)),
+      experience_port_(experience_port),
+      skill_host_(std::move(skill_host)),
+      skill_port_(skill_port) {
     server_ = std::make_unique<skillops::common::HttpServer>(
         host_,
         port_,
@@ -75,6 +83,19 @@ skillops::common::HttpResponse SimpleHttpServer::HandleRequest(const skillops::c
     if (request.path == "/api/v1/projects" || request.path.rfind("/api/v1/projects/", 0) == 0) {
         const auto internal_path = "/internal/v1" + request.path.substr(std::string("/api/v1").size());
         skillops::common::HttpClient client(project_host_, project_port_);
+        return client.Send(request.method, WithQuery(internal_path, request), request.body);
+    }
+
+    if (request.path == "/api/v1/experiences" || request.path.rfind("/api/v1/experiences/", 0) == 0) {
+        const auto internal_path = "/internal/v1" + request.path.substr(std::string("/api/v1").size());
+        skillops::common::HttpClient client(experience_host_, experience_port_);
+        return client.Send(request.method, WithQuery(internal_path, request), request.body);
+    }
+
+    if (request.path == "/api/v1/skill-drafts" || request.path.rfind("/api/v1/skill-drafts/", 0) == 0 ||
+        request.path == "/api/v1/skills") {
+        const auto internal_path = "/internal/v1" + request.path.substr(std::string("/api/v1").size());
+        skillops::common::HttpClient client(skill_host_, skill_port_);
         return client.Send(request.method, WithQuery(internal_path, request), request.body);
     }
 

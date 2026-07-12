@@ -16,7 +16,11 @@ public:
         std::string identity_host,
         std::uint16_t identity_port,
         std::string project_host,
-        std::uint16_t project_port);
+        std::uint16_t project_port,
+        std::string experience_host,
+        std::uint16_t experience_port,
+        std::string skill_host,
+        std::uint16_t skill_port);
     ~SimpleHttpServer();
 
     SimpleHttpServer(const SimpleHttpServer&) = delete;
@@ -34,6 +38,10 @@ private:
     std::uint16_t identity_port_;
     std::string project_host_;
     std::uint16_t project_port_;
+    std::string experience_host_;
+    std::uint16_t experience_port_;
+    std::string skill_host_;
+    std::uint16_t skill_port_;
     std::unique_ptr<skillops::common::HttpServer> server_;
 };
 
