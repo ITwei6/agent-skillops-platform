@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Agent SkillOps Gateway API
+  version: 0.1.0
+paths:
+  /healthz:
+    get:
+      summary: Gateway health check
+      responses:
+        "200":
+          description: Gateway is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/ping:
+    get:
+      summary: Gateway ping endpoint
+      responses:
+        "200":
+          description: Ping response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+components:
+  schemas:
+    Envelope:
+      type: object
+      required:
+        - code
+        - message
+        - request_id
+        - data
+      properties:
+        code:
+          type: string
+          example: OK
+        message:
+          type: string
+          example: success
+        request_id:
+          type: string
+          example: req_1
+        data:
+          type: object

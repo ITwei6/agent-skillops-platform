@@ -1,0 +1,5 @@
+service:
+  name: project-service
+logging:
+  level: info
+  output: stdout
