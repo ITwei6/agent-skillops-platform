@@ -5,6 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "skillops/common/request_context.h"
+
 namespace skillops::common {
 
 inline std::string JsonEscape(const std::string& value) {
@@ -72,9 +74,11 @@ inline std::string JsonEnvelope(
     const std::string& message,
     const std::string& request_id,
     const std::string& data) {
+    const auto& current_request_id = CurrentRequestId();
+    const auto& effective_request_id = current_request_id.empty() ? request_id : current_request_id;
     return "{\"code\":" + JsonString(code) +
            ",\"message\":" + JsonString(message) +
-           ",\"request_id\":" + JsonString(request_id) +
+           ",\"request_id\":" + JsonString(effective_request_id) +
            ",\"data\":" + data + "}";
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "skillops/common/http_server.h"
+#include "skillops/common/request_context.h"
 
 #include <cstdint>
 #include <string>
@@ -11,7 +12,11 @@ class HttpClient {
 public:
     HttpClient(std::string host, std::uint16_t port);
 
-    HttpResponse Send(const std::string& method, const std::string& path, const std::string& body = "") const;
+    HttpResponse Send(
+        const std::string& method,
+        const std::string& path,
+        const std::string& body = "",
+        const std::string& request_id = CurrentRequestId()) const;
 
 private:
     std::string host_;

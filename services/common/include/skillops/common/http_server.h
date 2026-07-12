@@ -14,6 +14,7 @@ struct HttpRequest {
     std::string path;
     std::string query;
     std::string body;
+    std::string request_id;
     std::unordered_map<std::string, std::string> headers;
 };
 

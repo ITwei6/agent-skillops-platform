@@ -85,6 +85,7 @@ main() {
 
     response="$(request POST "${base}/users" '{"team_id":"team_1","name":"Admin","email":"admin@example.com","role":"owner"}')"
     assert_contains "${response}" '"user_id":"user_1"'
+    assert_contains "${response}" '"request_id":"req_'
 
     response="$(request POST "${base}/projects" '{"team_id":"team_1","name":"SkillOps","description":"Team skill governance","repo_url":"https://example.com/repo.git","created_by":"user_1"}')"
     assert_contains "${response}" '"project_id":"proj_1"'

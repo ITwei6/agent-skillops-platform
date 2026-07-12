@@ -1,5 +1,6 @@
 #include "skillops/common/http_server.h"
 
+#include "skillops/common/request_context.h"
 #include "skillops/common/logging.h"
 
 #include <arpa/inet.h>
@@ -55,6 +56,13 @@ HttpRequest ParseRequest(const std::string& raw) {
             return static_cast<char>(std::tolower(ch));
         });
         request.headers[name] = Trim(line.substr(colon_pos + 1));
+    }
+
+    auto request_id_it = request.headers.find("x-request-id");
+    if (request_id_it != request.headers.end() && !request_id_it->second.empty()) {
+        request.request_id = request_id_it->second;
+    } else {
+        request.request_id = GenerateRequestId();
     }
 
     return request;
@@ -141,15 +149,26 @@ void HttpServer::HandleClient(int client_fd) {
 
     HttpResponse response;
     try {
-        response = handler_(ParseRequest(std::string(buffer, static_cast<std::size_t>(received))));
+        const auto request = ParseRequest(std::string(buffer, static_cast<std::size_t>(received)));
+        SetCurrentRequestId(request.request_id);
+        response = handler_(request);
     } catch (const std::exception& ex) {
-        response = HttpResponse::Json(500, "Internal Server Error", "{\"code\":\"SYSTEM_ERROR\",\"message\":\"internal error\",\"request_id\":\"req_1\",\"data\":{}}");
+        const auto request_id = CurrentRequestId().empty() ? GenerateRequestId() : CurrentRequestId();
+        const std::string body =
+            std::string("{\"code\":\"SYSTEM_ERROR\",\"message\":\"internal error\",\"request_id\":\"") +
+            request_id +
+            "\",\"data\":{}}";
+        response = HttpResponse::Json(
+            500,
+            "Internal Server Error",
+            body);
         LogInfo(std::string("http handler failed: ") + ex.what());
     }
 
     const auto serialized = SerializeResponse(response);
     static_cast<void>(::send(client_fd, serialized.data(), serialized.size(), 0));
     ::close(client_fd);
+    ClearCurrentRequestId();
 }
 
 std::string HttpServer::SerializeResponse(const HttpResponse& response) {
@@ -157,6 +176,7 @@ std::string HttpServer::SerializeResponse(const HttpResponse& response) {
     out << "HTTP/1.1 " << response.status_code << " " << response.reason << "\r\n"
         << "Content-Type: " << response.content_type << "\r\n"
         << "Content-Length: " << response.body.size() << "\r\n"
+        << "X-Request-Id: " << (CurrentRequestId().empty() ? "req_1" : CurrentRequestId()) << "\r\n"
         << "Connection: close\r\n\r\n"
         << response.body;
     return out.str();

@@ -2,6 +2,7 @@ add_library(skillops-common
     source/config/config.cc
     source/http/http_client.cc
     source/http/http_server.cc
+    source/context/request_context.cc
 )
 
 target_include_directories(skillops-common

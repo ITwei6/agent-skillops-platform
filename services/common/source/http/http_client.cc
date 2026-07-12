@@ -1,4 +1,5 @@
 #include "skillops/common/http_client.h"
+#include "skillops/common/request_context.h"
 
 #include <arpa/inet.h>
 #include <netinet/in.h>
@@ -52,7 +53,11 @@ HttpResponse ParseRawResponse(const std::string& raw) {
 HttpClient::HttpClient(std::string host, std::uint16_t port)
     : host_(std::move(host)), port_(port) {}
 
-HttpResponse HttpClient::Send(const std::string& method, const std::string& path, const std::string& body) const {
+HttpResponse HttpClient::Send(
+    const std::string& method,
+    const std::string& path,
+    const std::string& body,
+    const std::string& request_id) const {
     const int client_fd = ::socket(AF_INET, SOCK_STREAM, 0);
     if (client_fd < 0) {
         throw std::runtime_error(std::string("socket failed: ") + std::strerror(errno));
@@ -76,6 +81,7 @@ HttpResponse HttpClient::Send(const std::string& method, const std::string& path
             << "Host: " << host_ << ":" << port_ << "\r\n"
             << "Content-Type: application/json\r\n"
             << "Content-Length: " << body.size() << "\r\n"
+            << "X-Request-Id: " << (request_id.empty() ? CurrentRequestId() : request_id) << "\r\n"
             << "Connection: close\r\n\r\n"
             << body;
 
