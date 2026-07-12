@@ -1,4 +1,5 @@
 #include "skillops/artifact/artifact_service.h"
+#include "skillops/common/config.h"
 #include "skillops/common/http_server.h"
 #include "skillops/common/json.h"
 #include "skillops/common/logging.h"
@@ -66,12 +67,34 @@ std::uint64_t ParseSizeBytes(const std::string& value) {
 int main(int argc, char** argv) {
     std::string host = "0.0.0.0";
     std::uint16_t port = 18086;
+    std::string config_path;
 
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
+        const auto config_value = ReadArgValue(arg, "--config=");
+        if (!config_value.empty()) {
+            config_path = config_value;
+        }
+    }
+
+    if (!config_path.empty()) {
+        skillops::common::ServiceConfig config;
+        config.name = "artifact-service";
+        config.host = host;
+        config.port = port;
+        config = skillops::common::LoadServiceConfig(config_path, config);
+        host = config.host;
+        port = config.port;
+    }
+
+    for (int i = 1; i < argc; ++i) {
+        const std::string arg(argv[i]);
+        const auto config_value = ReadArgValue(arg, "--config=");
         const auto host_value = ReadArgValue(arg, "--host=");
         const auto port_value = ReadArgValue(arg, "--port=");
-        if (!host_value.empty()) {
+        if (!config_value.empty()) {
+            continue;
+        } else if (!host_value.empty()) {
             host = host_value;
         } else if (!port_value.empty()) {
             port = static_cast<std::uint16_t>(std::stoi(port_value));

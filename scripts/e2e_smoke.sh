@@ -24,8 +24,9 @@ start_service() {
     local port="$2"
     local extra_args="${3:-}"
     local binary="${ROOT_DIR}/build/services/${name}/${name}"
+    local config="${ROOT_DIR}/deploy/config/${name}.yaml"
 
-    "${binary}" --host=127.0.0.1 --port="${port}" ${extra_args} >"/tmp/skillops-${name}.log" 2>&1 &
+    "${binary}" --config="${config}" --host=127.0.0.1 --port="${port}" ${extra_args} >"/tmp/skillops-${name}.log" 2>&1 &
     PIDS+=("$!")
 }
 

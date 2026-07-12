@@ -5,3 +5,22 @@ service:
 logging:
   level: info
   output: stdout
+upstreams:
+  identity-service:
+    host: 127.0.0.1
+    port: 18081
+  project-service:
+    host: 127.0.0.1
+    port: 18082
+  experience-service:
+    host: 127.0.0.1
+    port: 18083
+  skill-service:
+    host: 127.0.0.1
+    port: 18084
+  review-service:
+    host: 127.0.0.1
+    port: 18085
+  artifact-service:
+    host: 127.0.0.1
+    port: 18086

@@ -1,4 +1,5 @@
 add_library(skillops-common
+    source/config/config.cc
     source/http/http_client.cc
     source/http/http_server.cc
 )
