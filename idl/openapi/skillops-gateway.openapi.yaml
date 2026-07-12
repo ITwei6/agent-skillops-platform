@@ -308,6 +308,77 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Envelope"
+  /api/v1/artifacts:
+    get:
+      summary: List artifact metadata
+      parameters:
+        - in: query
+          name: project_id
+          schema:
+            type: string
+        - in: query
+          name: owner_type
+          schema:
+            type: string
+        - in: query
+          name: owner_id
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Artifact metadata page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+    post:
+      summary: Register artifact metadata
+      description: First-stage skeleton accepts JSON metadata. Multipart upload and object storage are deferred.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateArtifactRequest"
+      responses:
+        "200":
+          description: Created artifact metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/artifacts/{artifact_id}:
+    get:
+      summary: Get artifact metadata
+      parameters:
+        - in: path
+          name: artifact_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Artifact metadata
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
+  /api/v1/artifacts/{artifact_id}/download:
+    get:
+      summary: Get artifact download placeholder
+      parameters:
+        - in: path
+          name: artifact_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Download metadata placeholder
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Envelope"
 components:
   schemas:
     Envelope:
@@ -437,3 +508,31 @@ components:
             - comment
         comments:
           type: string
+    CreateArtifactRequest:
+      type: object
+      required:
+        - project_id
+        - owner_type
+        - owner_id
+        - file_name
+      properties:
+        project_id:
+          type: string
+        owner_type:
+          type: string
+          enum:
+            - experience
+            - skill
+            - package
+            - review
+        owner_id:
+          type: string
+        file_name:
+          type: string
+        content_type:
+          type: string
+        sha256:
+          type: string
+        size_bytes:
+          type: integer
+          format: int64

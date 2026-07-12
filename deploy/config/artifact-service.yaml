@@ -1,0 +1,5 @@
+service:
+  name: artifact-service
+logging:
+  level: info
+  output: stdout

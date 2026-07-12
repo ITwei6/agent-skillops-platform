@@ -32,7 +32,9 @@ SimpleHttpServer::SimpleHttpServer(
     std::string skill_host,
     std::uint16_t skill_port,
     std::string review_host,
-    std::uint16_t review_port)
+    std::uint16_t review_port,
+    std::string artifact_host,
+    std::uint16_t artifact_port)
     : host_(std::move(host)),
       port_(port),
       identity_host_(std::move(identity_host)),
@@ -44,7 +46,9 @@ SimpleHttpServer::SimpleHttpServer(
       skill_host_(std::move(skill_host)),
       skill_port_(skill_port),
       review_host_(std::move(review_host)),
-      review_port_(review_port) {
+      review_port_(review_port),
+      artifact_host_(std::move(artifact_host)),
+      artifact_port_(artifact_port) {
     server_ = std::make_unique<skillops::common::HttpServer>(
         host_,
         port_,
@@ -113,6 +117,12 @@ skillops::common::HttpResponse SimpleHttpServer::HandleRequest(const skillops::c
     if (request.path == "/api/v1/reviews/queue") {
         const auto internal_path = "/internal/v1/reviews/queue";
         skillops::common::HttpClient client(review_host_, review_port_);
+        return client.Send(request.method, WithQuery(internal_path, request), request.body);
+    }
+
+    if (request.path == "/api/v1/artifacts" || request.path.rfind("/api/v1/artifacts/", 0) == 0) {
+        const auto internal_path = "/internal/v1" + request.path.substr(std::string("/api/v1").size());
+        skillops::common::HttpClient client(artifact_host_, artifact_port_);
         return client.Send(request.method, WithQuery(internal_path, request), request.body);
     }
 

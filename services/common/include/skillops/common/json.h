@@ -171,4 +171,24 @@ inline std::vector<std::string> ExtractJsonStringArray(const std::string& body, 
     return values;
 }
 
+inline std::string ExtractJsonNumber(const std::string& body, const std::string& key) {
+    const auto key_pos = body.find("\"" + key + "\"");
+    if (key_pos == std::string::npos) {
+        return "";
+    }
+
+    const auto colon_pos = body.find(':', key_pos);
+    if (colon_pos == std::string::npos) {
+        return "";
+    }
+
+    const auto first = body.find_first_not_of(" \t\r\n", colon_pos + 1);
+    if (first == std::string::npos) {
+        return "";
+    }
+
+    const auto last = body.find_first_not_of("0123456789", first);
+    return body.substr(first, last == std::string::npos ? std::string::npos : last - first);
+}
+
 }  // namespace skillops::common

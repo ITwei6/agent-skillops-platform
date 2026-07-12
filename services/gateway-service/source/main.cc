@@ -27,6 +27,8 @@ int main(int argc, char** argv) {
     std::uint16_t skill_port = 18084;
     std::string review_host = "127.0.0.1";
     std::uint16_t review_port = 18085;
+    std::string artifact_host = "127.0.0.1";
+    std::uint16_t artifact_port = 18086;
 
     for (int i = 1; i < argc; ++i) {
         const std::string arg(argv[i]);
@@ -42,6 +44,8 @@ int main(int argc, char** argv) {
         const auto skill_port_value = ReadArgValue(arg, "--skill-port=");
         const auto review_host_value = ReadArgValue(arg, "--review-host=");
         const auto review_port_value = ReadArgValue(arg, "--review-port=");
+        const auto artifact_host_value = ReadArgValue(arg, "--artifact-host=");
+        const auto artifact_port_value = ReadArgValue(arg, "--artifact-port=");
         if (!host_value.empty()) {
             host = host_value;
         } else if (!port_value.empty()) {
@@ -66,6 +70,10 @@ int main(int argc, char** argv) {
             review_host = review_host_value;
         } else if (!review_port_value.empty()) {
             review_port = static_cast<std::uint16_t>(std::stoi(review_port_value));
+        } else if (!artifact_host_value.empty()) {
+            artifact_host = artifact_host_value;
+        } else if (!artifact_port_value.empty()) {
+            artifact_port = static_cast<std::uint16_t>(std::stoi(artifact_port_value));
         } else {
             std::cerr << "Unknown argument: " << arg << std::endl;
             return 2;
@@ -86,7 +94,9 @@ int main(int argc, char** argv) {
             skill_host,
             skill_port,
             review_host,
-            review_port);
+            review_port,
+            artifact_host,
+            artifact_port);
         return server.Run();
     } catch (const std::exception& ex) {
         std::cerr << "gateway-service failed: " << ex.what() << std::endl;

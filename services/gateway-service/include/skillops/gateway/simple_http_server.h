@@ -22,7 +22,9 @@ public:
         std::string skill_host,
         std::uint16_t skill_port,
         std::string review_host,
-        std::uint16_t review_port);
+        std::uint16_t review_port,
+        std::string artifact_host,
+        std::uint16_t artifact_port);
     ~SimpleHttpServer();
 
     SimpleHttpServer(const SimpleHttpServer&) = delete;
@@ -46,6 +48,8 @@ private:
     std::uint16_t skill_port_;
     std::string review_host_;
     std::uint16_t review_port_;
+    std::string artifact_host_;
+    std::uint16_t artifact_port_;
     std::unique_ptr<skillops::common::HttpServer> server_;
 };
 
